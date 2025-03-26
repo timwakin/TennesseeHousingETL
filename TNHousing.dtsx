@@ -1,18 +1,18 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="3/24/2025 12:52:59 PM"
   DTS:CreationName="Microsoft.Package"
   DTS:CreatorComputerName="TPV"
   DTS:CreatorName="TPV\Tim"
-  DTS:DTSID="{B7EBDDE5-853A-4F4B-B1C2-6F19B4F27696}"
+  DTS:DTSID="{C7B9E33F-640B-47E3-9AA8-ADB1C874C509}"
   DTS:ExecutableType="Microsoft.Package"
   DTS:LastModifiedProductVersion="16.0.5685.0"
   DTS:LocaleID="1033"
   DTS:ObjectName="TNHousing"
   DTS:PackageType="5"
-  DTS:VersionBuild="33"
-  DTS:VersionGUID="{CF331712-FDC9-45A5-9D8E-A59D16401D76}">
+  DTS:VersionBuild="46"
+  DTS:VersionGUID="{9B5CF3AC-7A11-4EB1-9370-0472DA8F52CB}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -37,20 +37,52 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=TPV;Initial Catalog=Sandbox;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-TNHousing-{1779E4DB-4122-4F2B-BEDC-CF384137D7F4}TPV.Sandbox;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=TPV;Initial Catalog=Sandbox;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-TNHousing-{1779E4DB-4122-4F2B-BEDC-CF384137D7F4}TPV.Sandbox;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[TPV.Sandbox1]"
+      DTS:CreationName="ADO.NET:System.Data.SqlClient.SqlConnection, System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+      DTS:DTSID="{BE3FA591-E053-4A4C-8755-ED5398420DE1}"
+      DTS:ObjectName="TPV.Sandbox1">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=TPV;Initial Catalog=Sandbox;Integrated Security=True;TrustServerCertificate=True;Application Name=SSIS-TNHousing-{BE3FA591-E053-4A4C-8755-ED5398420DE1}TPV.Sandbox1;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
   <DTS:Variables />
   <DTS:Executables>
     <DTS:Executable
-      DTS:refId="Package\Data Flow Task"
+      DTS:refId="Package\Delete Duplicate Rows"
+      DTS:CreationName="Microsoft.DbMaintenanceTSQLExecuteTask"
+      DTS:Description="Execute T-SQL Statement Task"
+      DTS:DTSID="{15B452A2-0B57-4664-8791-61201F2AED7D}"
+      DTS:ExecutableType="Microsoft.DbMaintenanceTSQLExecuteTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Delete Duplicate Rows"
+      DTS:TaskContact="Execute T-SQL Statement Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{BE3FA591-E053-4A4C-8755-ED5398420DE1}"
+          SQLTask:SqlStatementSource="WITH RowNumCTE AS(&#xA;Select *,&#xA;&#x9;ROW_NUMBER() OVER (&#xA;&#x9;PARTITION BY ParcelID,&#xA;&#x9;&#x9;&#x9;&#x9; Property_Address,&#xA;&#x9;&#x9;&#x9;&#x9; Sale_Price,&#xA;&#x9;&#x9;&#x9;&#x9; Sale_Date,&#xA;&#x9;&#x9;&#x9;&#x9; Legal_Reference&#xA;&#x9;&#x9;&#x9;&#x9; ORDER BY&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;UniqueID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;) row_num&#xA;From [Sandbox].[dbo].[Nahsville_Housing_Data]&#xA;&#xA;)&#xA;&#xA;Delete &#xA;From RowNumCTE&#xA;Where row_num &gt; 1"
+          SQLTask:ServerVersion="9"
+          SQLTask:ExtendedLogging="True"
+          SQLTask:LocalConnectionForLogging=""
+          SQLTask:TaskName=""
+          SQLTask:IgnoreDatabasesInNotOnlineState="False" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Import Fresh Data"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:Description="Data Flow Task"
       DTS:DTSID="{158C577F-E438-4A2B-808C-2B1E2473496B}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
-      DTS:ObjectName="Data Flow Task"
+      DTS:ObjectName="Import Fresh Data"
       DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
       <DTS:Variables />
       <DTS:ObjectData>
@@ -58,7 +90,7 @@
           version="1">
           <components>
             <component
-              refId="Package\Data Flow Task\Convert Data"
+              refId="Package\Import Fresh Data\Convert Data"
               componentClassID="Microsoft.DataConvert"
               contactInfo="Data Conversion;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
               description="Data Conversion"
@@ -66,97 +98,97 @@
               usesDispositions="true">
               <inputs>
                 <input
-                  refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input]"
+                  refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input]"
                   name="Data Conversion Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[PropertyAddress]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[PropertyAddress]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="PropertyAddress"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[OwnerAddress]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[OwnerAddress]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="OwnerAddress"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[UniqueID]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[UniqueID]"
                       cachedDataType="r8"
                       cachedName="UniqueID "
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[UniqueID ]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[UniqueID ]"
                       name="UniqueID" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[SaleDate]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[SaleDate]"
                       cachedDataType="date"
                       cachedName="SaleDate"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SaleDate]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SaleDate]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[SalePrice]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[SalePrice]"
                       cachedDataType="r8"
                       cachedName="SalePrice"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SalePrice]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SalePrice]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[Acreage]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[Acreage]"
                       cachedDataType="r8"
                       cachedName="Acreage"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[Acreage]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[Acreage]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[LandValue]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[LandValue]"
                       cachedDataType="r8"
                       cachedName="LandValue"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LandValue]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LandValue]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[BuildingValue]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[BuildingValue]"
                       cachedDataType="r8"
                       cachedName="BuildingValue"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[BuildingValue]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[BuildingValue]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[Bedrooms]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[Bedrooms]"
                       cachedDataType="r8"
                       cachedName="Bedrooms"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[Bedrooms]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[Bedrooms]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[FullBath]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[FullBath]"
                       cachedDataType="r8"
                       cachedName="FullBath"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[FullBath]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[FullBath]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[HalfBath]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[HalfBath]"
                       cachedDataType="r8"
                       cachedName="HalfBath"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[HalfBath]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[HalfBath]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[YearBuilt]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[YearBuilt]"
                       cachedDataType="r8"
                       cachedName="YearBuilt"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[YearBuilt]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[YearBuilt]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input].Columns[TaxDistrict]"
+                      refId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input].Columns[TaxDistrict]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="TaxDistrict"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[TaxDistrict]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[TaxDistrict]" />
                   </inputColumns>
                   <externalMetadataColumns />
                 </input>
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output]"
+                  refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output]"
                   exclusionGroup="1"
                   name="Data Conversion Output"
-                  synchronousInputId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input]">
+                  synchronousInputId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of PropertyAddress]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of PropertyAddress]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       length="255"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of PropertyAddress]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of PropertyAddress]"
                       name="Copy of PropertyAddress"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -164,7 +196,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -172,12 +204,12 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of OwnerAddress]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of OwnerAddress]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       length="255"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of OwnerAddress]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of OwnerAddress]"
                       name="Copy of OwnerAddress"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -185,7 +217,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -193,11 +225,11 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of UniqueID]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of UniqueID]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of UniqueID]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of UniqueID]"
                       name="Copy of UniqueID"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -205,7 +237,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[UniqueID ]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[UniqueID ]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -213,12 +245,12 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SaleDate]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SaleDate]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       length="50"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SaleDate]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SaleDate]"
                       name="Copy of SaleDate"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -226,7 +258,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SaleDate]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SaleDate]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -234,11 +266,11 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SalePrice]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SalePrice]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SalePrice]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SalePrice]"
                       name="Copy of SalePrice"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -246,7 +278,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SalePrice]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SalePrice]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -254,11 +286,11 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Acreage]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Acreage]"
                       dataType="numeric"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Acreage]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Acreage]"
                       name="Copy of Acreage"
                       precision="18"
                       truncationRowDisposition="FailComponent">
@@ -267,7 +299,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[Acreage]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[Acreage]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -275,11 +307,11 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of LandValue]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of LandValue]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of LandValue]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of LandValue]"
                       name="Copy of LandValue"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -287,7 +319,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LandValue]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LandValue]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -295,11 +327,11 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of BuildingValue]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of BuildingValue]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of BuildingValue]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of BuildingValue]"
                       name="Copy of BuildingValue"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -307,7 +339,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[BuildingValue]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[BuildingValue]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -315,11 +347,11 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Bedrooms]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Bedrooms]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Bedrooms]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Bedrooms]"
                       name="Copy of Bedrooms"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -327,7 +359,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[Bedrooms]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[Bedrooms]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -335,11 +367,11 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of FullBath]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of FullBath]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of FullBath]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of FullBath]"
                       name="Copy of FullBath"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -347,7 +379,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[FullBath]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[FullBath]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -355,11 +387,11 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of HalfBath]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of HalfBath]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of HalfBath]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of HalfBath]"
                       name="Copy of HalfBath"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -367,7 +399,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[HalfBath]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[HalfBath]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -375,12 +407,12 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of YearBuilt]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of YearBuilt]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       length="10"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of YearBuilt]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of YearBuilt]"
                       name="Copy of YearBuilt"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -388,7 +420,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[YearBuilt]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[YearBuilt]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -396,12 +428,12 @@
                       </properties>
                     </outputColumn>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of TaxDistrict]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of TaxDistrict]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       length="100"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of TaxDistrict]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of TaxDistrict]"
                       name="Copy of TaxDistrict"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -409,7 +441,7 @@
                           containsID="true"
                           dataType="System.Int32"
                           description="Specifies the input column used as the source of data for the conversion."
-                          name="SourceInputColumnLineageID">#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[TaxDistrict]}</property>
+                          name="SourceInputColumnLineageID">#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[TaxDistrict]}</property>
                         <property
                           dataType="System.Boolean"
                           description="Indicates whether the column uses the faster, locale-neutral parsing routines."
@@ -420,22 +452,22 @@
                   <externalMetadataColumns />
                 </output>
                 <output
-                  refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Error Output]"
+                  refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="Data Conversion Error Output"
-                  synchronousInputId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input]">
+                  synchronousInputId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Error Output].Columns[ErrorCode]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Error Output].Columns[ErrorCode]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Error Output].Columns[ErrorColumn]"
+                      refId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -444,7 +476,7 @@
               </outputs>
             </component>
             <component
-              refId="Package\Data Flow Task\Convert SoldAsVacant to boolean"
+              refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean"
               componentClassID="Microsoft.DerivedColumn"
               contactInfo="Derived Column;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
               description="Creates new column values by applying expressions to transformation input columns. Create new columns or overwrite existing ones. For example, concatenate the values from the 'first name' and 'last name' column to make a 'full name' column."
@@ -452,34 +484,58 @@
               usesDispositions="true">
               <inputs>
                 <input
-                  refId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Inputs[Derived Column Input]"
+                  refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Inputs[Derived Column Input]"
                   description="Input to the Derived Column Transformation"
                   name="Derived Column Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Inputs[Derived Column Input].Columns[SoldAsVacant]"
+                      refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Inputs[Derived Column Input].Columns[SoldAsVacant]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="SoldAsVacant"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SoldAsVacant]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SoldAsVacant]" />
+                    <inputColumn
+                      refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Inputs[Derived Column Input].Columns[PropertyAddress]"
+                      cachedDataType="wstr"
+                      cachedLength="255"
+                      cachedName="PropertyAddress"
+                      errorOrTruncationOperation="Computation"
+                      errorRowDisposition="FailComponent"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]"
+                      truncationRowDisposition="FailComponent"
+                      usageType="readWrite">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Expression"
+                          name="Expression">[TRIM](#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]})</property>
+                        <property
+                          containsID="true"
+                          dataType="System.String"
+                          description="Derived Column Friendly Expression"
+                          expressionType="Notify"
+                          name="FriendlyExpression">TRIM(PropertyAddress)</property>
+                      </properties>
+                    </inputColumn>
                   </inputColumns>
                   <externalMetadataColumns />
                 </input>
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Output]"
+                  refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Output]"
                   description="Default Output of the Derived Column Transformation"
                   exclusionGroup="1"
                   name="Derived Column Output"
-                  synchronousInputId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Inputs[Derived Column Input]">
+                  synchronousInputId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Inputs[Derived Column Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Output].Columns[SoldAsVacant_Bool]"
+                      refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Output].Columns[SoldAsVacant_Bool]"
                       dataType="bool"
                       errorOrTruncationOperation="Computation"
                       errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Output].Columns[SoldAsVacant_Bool]"
+                      lineageId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Output].Columns[SoldAsVacant_Bool]"
                       name="SoldAsVacant_Bool"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -487,7 +543,7 @@
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Expression"
-                          name="Expression">[SUBSTRING](#{Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SoldAsVacant]},1,1) == "Y" ?  TRUE  :  FALSE </property>
+                          name="Expression">[SUBSTRING](#{Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SoldAsVacant]},1,1) == "Y" ?  TRUE  :  FALSE </property>
                         <property
                           containsID="true"
                           dataType="System.String"
@@ -500,23 +556,23 @@
                   <externalMetadataColumns />
                 </output>
                 <output
-                  refId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output]"
+                  refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output]"
                   description="Error Output of the Derived Column Transformation"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="Derived Column Error Output"
-                  synchronousInputId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Inputs[Derived Column Input]">
+                  synchronousInputId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Inputs[Derived Column Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                      lineageId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      refId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -525,7 +581,7 @@
               </outputs>
             </component>
             <component
-              refId="Package\Data Flow Task\Excel Source"
+              refId="Package\Import Fresh Data\Excel Source"
               componentClassID="Microsoft.ExcelSource"
               contactInfo="Excel Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
               description="Excel Source"
@@ -566,7 +622,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Data Flow Task\Excel Source.Connections[OleDbConnection]"
+                  refId="Package\Import Fresh Data\Excel Source.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Excel Connection Manager]"
                   connectionManagerRefId="Package.ConnectionManagers[Excel Connection Manager]"
                   description="The OLE DB runtime connection used to access the database."
@@ -574,395 +630,395 @@
               </connections>
               <outputs>
                 <output
-                  refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output]"
+                  refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output]"
                   name="Excel Source Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[UniqueID ]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[UniqueID ]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[UniqueID ]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[UniqueID ]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[UniqueID ]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[UniqueID ]"
                       name="UniqueID "
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[ParcelID]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[ParcelID]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[ParcelID]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[ParcelID]"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[ParcelID]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[ParcelID]"
                       name="ParcelID"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LandUse]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LandUse]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[LandUse]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[LandUse]"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LandUse]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LandUse]"
                       name="LandUse"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[PropertyAddress]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[PropertyAddress]"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]"
                       name="PropertyAddress"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SaleDate]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SaleDate]"
                       dataType="date"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[SaleDate]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SaleDate]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[SaleDate]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SaleDate]"
                       name="SaleDate"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SalePrice]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SalePrice]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[SalePrice]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SalePrice]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[SalePrice]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SalePrice]"
                       name="SalePrice"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LegalReference]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LegalReference]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[LegalReference]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[LegalReference]"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LegalReference]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LegalReference]"
                       name="LegalReference"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SoldAsVacant]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SoldAsVacant]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[SoldAsVacant]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[SoldAsVacant]"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[SoldAsVacant]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[SoldAsVacant]"
                       name="SoldAsVacant"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[OwnerName]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[OwnerName]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[OwnerName]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[OwnerName]"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[OwnerName]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[OwnerName]"
                       name="OwnerName"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[OwnerAddress]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[OwnerAddress]"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]"
                       name="OwnerAddress"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[Acreage]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[Acreage]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[Acreage]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[Acreage]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[Acreage]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[Acreage]"
                       name="Acreage"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[TaxDistrict]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[TaxDistrict]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[TaxDistrict]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[TaxDistrict]"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[TaxDistrict]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[TaxDistrict]"
                       name="TaxDistrict"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LandValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LandValue]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[LandValue]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LandValue]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[LandValue]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LandValue]"
                       name="LandValue"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[BuildingValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[BuildingValue]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[BuildingValue]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[BuildingValue]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[BuildingValue]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[BuildingValue]"
                       name="BuildingValue"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[TotalValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[TotalValue]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[TotalValue]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[TotalValue]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[TotalValue]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[TotalValue]"
                       name="TotalValue"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[YearBuilt]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[YearBuilt]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[YearBuilt]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[YearBuilt]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[YearBuilt]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[YearBuilt]"
                       name="YearBuilt"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[Bedrooms]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[Bedrooms]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[Bedrooms]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[Bedrooms]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[Bedrooms]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[Bedrooms]"
                       name="Bedrooms"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[FullBath]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[FullBath]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[FullBath]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[FullBath]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[FullBath]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[FullBath]"
                       name="FullBath"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[HalfBath]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[HalfBath]"
                       dataType="r8"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[HalfBath]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[HalfBath]"
+                      externalMetadataColumnId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[HalfBath]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[HalfBath]"
                       name="HalfBath"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
                     isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[UniqueID ]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[UniqueID ]"
                       dataType="r8"
                       name="UniqueID " />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[ParcelID]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[ParcelID]"
                       dataType="wstr"
                       length="255"
                       name="ParcelID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[LandUse]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[LandUse]"
                       dataType="wstr"
                       length="255"
                       name="LandUse" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[PropertyAddress]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[PropertyAddress]"
                       dataType="wstr"
                       length="255"
                       name="PropertyAddress" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[SaleDate]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[SaleDate]"
                       dataType="date"
                       name="SaleDate" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[SalePrice]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[SalePrice]"
                       dataType="r8"
                       name="SalePrice" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[LegalReference]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[LegalReference]"
                       dataType="wstr"
                       length="255"
                       name="LegalReference" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[SoldAsVacant]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[SoldAsVacant]"
                       dataType="wstr"
                       length="255"
                       name="SoldAsVacant" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[OwnerName]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[OwnerName]"
                       dataType="wstr"
                       length="255"
                       name="OwnerName" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[OwnerAddress]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[OwnerAddress]"
                       dataType="wstr"
                       length="255"
                       name="OwnerAddress" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[Acreage]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[Acreage]"
                       dataType="r8"
                       name="Acreage" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[TaxDistrict]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[TaxDistrict]"
                       dataType="wstr"
                       length="255"
                       name="TaxDistrict" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[LandValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[LandValue]"
                       dataType="r8"
                       name="LandValue" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[BuildingValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[BuildingValue]"
                       dataType="r8"
                       name="BuildingValue" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[TotalValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[TotalValue]"
                       dataType="r8"
                       name="TotalValue" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[YearBuilt]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[YearBuilt]"
                       dataType="r8"
                       name="YearBuilt" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[Bedrooms]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[Bedrooms]"
                       dataType="r8"
                       name="Bedrooms" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[FullBath]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[FullBath]"
                       dataType="r8"
                       name="FullBath" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].ExternalColumns[HalfBath]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].ExternalColumns[HalfBath]"
                       dataType="r8"
                       name="HalfBath" />
                   </externalMetadataColumns>
                 </output>
                 <output
-                  refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output]"
+                  refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output]"
                   isErrorOut="true"
                   name="Excel Source Error Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[UniqueID ]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[UniqueID ]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[UniqueID ]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[UniqueID ]"
                       name="UniqueID " />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[ParcelID]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[ParcelID]"
                       dataType="wstr"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[ParcelID]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[ParcelID]"
                       name="ParcelID" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[LandUse]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[LandUse]"
                       dataType="wstr"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[LandUse]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[LandUse]"
                       name="LandUse" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[PropertyAddress]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[PropertyAddress]"
                       dataType="wstr"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[PropertyAddress]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[PropertyAddress]"
                       name="PropertyAddress" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[SaleDate]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[SaleDate]"
                       dataType="date"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[SaleDate]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[SaleDate]"
                       name="SaleDate" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[SalePrice]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[SalePrice]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[SalePrice]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[SalePrice]"
                       name="SalePrice" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[LegalReference]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[LegalReference]"
                       dataType="wstr"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[LegalReference]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[LegalReference]"
                       name="LegalReference" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[SoldAsVacant]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[SoldAsVacant]"
                       dataType="wstr"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[SoldAsVacant]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[SoldAsVacant]"
                       name="SoldAsVacant" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[OwnerName]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[OwnerName]"
                       dataType="wstr"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[OwnerName]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[OwnerName]"
                       name="OwnerName" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[OwnerAddress]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[OwnerAddress]"
                       dataType="wstr"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[OwnerAddress]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[OwnerAddress]"
                       name="OwnerAddress" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[Acreage]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[Acreage]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[Acreage]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[Acreage]"
                       name="Acreage" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[TaxDistrict]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[TaxDistrict]"
                       dataType="wstr"
                       length="255"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[TaxDistrict]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[TaxDistrict]"
                       name="TaxDistrict" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[LandValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[LandValue]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[LandValue]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[LandValue]"
                       name="LandValue" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[BuildingValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[BuildingValue]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[BuildingValue]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[BuildingValue]"
                       name="BuildingValue" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[TotalValue]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[TotalValue]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[TotalValue]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[TotalValue]"
                       name="TotalValue" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[YearBuilt]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[YearBuilt]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[YearBuilt]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[YearBuilt]"
                       name="YearBuilt" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[Bedrooms]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[Bedrooms]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[Bedrooms]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[Bedrooms]"
                       name="Bedrooms" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[FullBath]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[FullBath]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[FullBath]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[FullBath]"
                       name="FullBath" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[HalfBath]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[HalfBath]"
                       dataType="r8"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[HalfBath]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[HalfBath]"
                       name="HalfBath" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[ErrorCode]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[ErrorCode]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[ErrorColumn]"
+                      refId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -971,7 +1027,7 @@
               </outputs>
             </component>
             <component
-              refId="Package\Data Flow Task\SplitOwnerAddress"
+              refId="Package\Import Fresh Data\SplitOwnerAddress"
               componentClassID="Microsoft.ManagedComponentHost"
               contactInfo="Includes and runs custom script code. For example, apply a business rule that limits the range of valid values in an &quot;income&quot; column or add values in two columns and calculate the average of the sum.;Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;13"
               description="Includes and runs custom script code. For example, apply a business rule that limits the range of valid values in an &quot;income&quot; column or add values in two columns and calculate the average of the sum."
@@ -1306,10 +1362,11 @@ public class ScriptMain : UserComponent
          */
         if(Row.OwnerAddress != null)
         {
+            char[] charsToTrim = { ' ' };
             var Columns = Row.OwnerAddress.Split(',');
             Row.OwnerAddressOut = Columns[0];
             Row.OwnerCityOut = Columns[1];
-            Row.OwnerStateOut = Columns[2]; 
+            Row.OwnerStateOut = Columns[2].Trim(charsToTrim); 
         }
         
     }
@@ -1585,7 +1642,7 @@ namespace SC_42bcef5071c6426e8410a10d99aaaae2.Properties {
     <msb:CodeName>SC_42bcef5071c6426e8410a10d99aaaae2</msb:CodeName>
     <msb:Language>msBuild</msb:Language>
     <msb:DisplayName>SC_42bcef5071c6426e8410a10d99aaaae2</msb:DisplayName>
-    <msb:ProjectId>{715E55E4-51EF-4C32-96A9-ABB1A1A815A7}</msb:ProjectId>
+    <msb:ProjectId>{432F3AD1-C230-4105-B349-4FC894E951F4}</msb:ProjectId>
   </msb:PropertyGroup>
   <msb:ItemGroup>
     <msb:Project Include="SC_42bcef5071c6426e8410a10d99aaaae2.csproj" />
@@ -1732,102 +1789,102 @@ namespace SC_42bcef5071c6426e8410a10d99aaaae2.Properties {
                     <arrayElement
                       dataType="System.String"><![CDATA[TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
-ZGUuDQ0KJAAAAAAAAABQRQAATAEDAK7Y4WcAAAAAAAAAAOAAIiALATAAABQAAAAIAAAAAAAAmjMA
+ZGUuDQ0KJAAAAAAAAABQRQAATAEDAB4X5GcAAAAAAAAAAOAAIiALATAAABQAAAAIAAAAAAAAvjMA
 AAAgAAAAQAAAAAAAEAAgAAAAAgAABAAAAAAAAAAGAAAAAAAAAACAAAAAAgAAAAAAAAMAYIUAABAA
-ABAAAAAAEAAAEAAAAAAAABAAAAAAAAAAAAAAAEgzAABPAAAAAEAAAEgEAAAAAAAAAAAAAAAAAAAA
+ABAAAAAAEAAAEAAAAAAAABAAAAAAAAAAAAAAAGwzAABPAAAAAEAAAEgEAAAAAAAAAAAAAAAAAAAA
 AAAAAGAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAIAAACAAAAAAAAAAAAAAACCAAAEgAAAAAAAAAAAAAAC50ZXh0AAAAoBMAAAAgAAAAFAAAAAIA
+AAAAIAAACAAAAAAAAAAAAAAACCAAAEgAAAAAAAAAAAAAAC50ZXh0AAAAxBMAAAAgAAAAFAAAAAIA
 AAAAAAAAAAAAAAAAACAAAGAucnNyYwAAAEgEAAAAQAAAAAYAAAAWAAAAAAAAAAAAAAAAAABAAABA
-LnJlbG9jAAAMAAAAAGAAAAACAAAAHAAAAAAAAAAAAAAAAAAAQAAAQgAAAAAAAAAAAAAAAAAAAAB8
-MwAAAAAAAEgAAAACAAUARCIAAEwQAAABAAAAAAAAAJAyAAC4AAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4CKBAAAAoqHgIoEQAACioTMAUAOwAAAAEAABEDbwYAAAYs
-MgNvBgAABheNGgAAASUWHyydbxIAAAoKAwYWmm8KAAAGAwYXmm8MAAAGAwYYmm8OAAAGKh4CKBIA
-AAYqKgIDBAUoEwAACipSAnsUAAAKAnsVAAAKFpRvFgAACiomAhYDKBcAAAoqIgIWKBgAAAoqWgMs
-CAIWKBkAAAoqcgEAAHBzGgAACnomAhcDKBcAAAoqWgMsCAIXKBkAAAoqcgEAAHBzGgAACnomAhgD
-KBcAAAoqWgMsCAIYKBkAAAoqcgEAAHBzGgAACnomAhkDKBcAAAoqWgMsCAIZKBkAAAoqcgEAAHBz
-GgAACnoeAigbAAAKKh4CKBwAAAoqfgIoHQAACgICcxYAAAZ9AQAABAICcxcAAAZ9AgAABCqSBHKe
-AABwGm8eAAAKLBUCBQIDKB8AAAoOBHMFAAAGbxQAAAYqSisHAgNvFQAABgNvEAAABi3xKgYqOgIo
-IAAACgIDfQMAAAQqOgIoIAAACgIDfQQAAAQqHgIoIAAACiqufgUAAAQtHnKuAABw0AcAAAIoIQAA
-Cm8iAAAKcyMAAAqABQAABH4FAAAEKhp+BgAABCoeAoAGAAAEKhp+BwAABCoeAigkAAAKKi5zHQAA
-BoAHAAAEKgAAQlNKQgEAAQAAAAAADAAAAHY0LjAuMzAzMTkAAAAABQBsAAAALAYAACN+AACYBgAA
-1AYAACNTdHJpbmdzAAAAAGwNAAAgAQAAI1VTAIwOAAAQAAAAI0dVSUQAAACcDgAAsAEAACNCbG9i
-AAAAAAAAAAIAAAFXFaIBCQEAAAD6ATMAFgAAAQAAACAAAAAIAAAABwAAAB4AAAAVAAAAJAAAABAA
-AAABAAAAAwAAAAsAAAAOAAAAAQAAAAQAAAABAAAAAADtAgEAAAAAAAYA5AGtBAYAeAKtBAYAMAGa
-BA8AIQUAAAYAXQHqAwYAxwHqAwYAqAHqAwYAXwLqAwYABALqAwYAHQLqAwYAdAHqAwYAjwGzAgoA
-OAJ9AAoAbAR9AA4AXQR9AAoAMwR9AAoADwZ9AAYAzAWiAwYAEwGaBAYAfQTNBAYAJwTVAxIA4wDX
-AhIARAHXAhIAywDAAwYA+ACtBAYASwSiAwYA0AKiAwYA/AOiAwYAFgSiAwYAngCiAwYATwCiAwYA
-ywbqAwAAAAAlAAAAAAABAAEAAQAQALUDAAAQAAEAAQABABAAUAQAADkAAQAFAAEAEADxBQAARQAB
-ABIAAQAQAJ4FAABJAAMAFgABABAAXwUAAEkABAAXAAAAEADUBDAFSQAFABgAAAEQAI4FMAVhAAcA
-HAAGAJ4FgQAGAF8FhQABAP8FiQABAP8FiQARAKkDjQARALsAkQARAD8AlQBQIAAAAADGAJYCBgAB
-AFggAAAAAMYAoQIGAAEAYCAAAAAAxgCoBpkAAQCnIAAAAACGGI0EBgACAK8gAAAAAIYYjQQnAAIA
-uiAAAAAAhgiqBZ8ABQDPIAAAAACGCLsFEAAFANkgAAAAAIYIFQNJAAYA4iAAAAAAhggtA6MABgD5
-IAAAAACGCG8GEAAHAAMhAAAAAIYIXgOjAAgAGiEAAAAAhgiDBhAACQAkIQAAAACGCHkDowAKADsh
-AAAAAIYIXQYQAAsARSEAAAAAhghFA6MADABcIQAAAACGAL8GSQANAGQhAAAAAIYA0wVJAA0AbCEA
-AAAAhhiNBAYADQCMIQAAAADGAJsGqAANALEhAAAAAMYBlAaZABEAxCEAAAAAxgGoBpkAEgDGIQAA
-AACGGI0EsgATANUhAAAAAIYYjQSyABQA5CEAAAAAgxiNBAYAFQDsIQAAAACTCHkEuAAVABgiAAAA
-AJMIowC9ABUAHyIAAAAAkwivAMIAFQAnIgAAAACWCOUFyAAWAC4iAAAAAIYYjQQGABYANiIAAAAA
-kRiTBM0AFgAAAAEAwwYAAAEAcgQAAAIAaQUAAAMAQQQAAAEArQIAAAEArQIAAAEArQIAAAEArQIA
-AAEArQIAAAEArQIAAAEArQIAAAEArQIAAAEALgAAAAIAcwAAAAMAcgQAAAQAQQQAAAEAcgQAAAEA
-wwYAAAEAFQYAAAEAFQYAAAEArQIJAI0EAQARAI0EBgAZAI0ECgApAI0EEAAxAI0EEAA5AI0EEABB
-AI0EEABJAI0EEABRAI0EEABZAI0EEABhAI0EEABpAI0EBgCZAI0EBgC5AI0EFQDJAI0EBgCJAJYC
-BgCJAKECBgDZAN8FIABxAI0EJwBxAHIEMQBxAGkFNQB5AM0COQBxAJkDPgBxAIoDRABxAJEDAQDh
-AI0EEABxAL8GSQBxANMFSQCJAI0EBgDZAJcFTQCJAH0FVACRAI0EBgDxAGEAWgDxAMcGYQChAI0E
-ZwDBAI0EBgAuAAsA6AAuABMA8QAuABsAEAEuACMAGQEuACsAQgEuADMAQgEuADsAQgEuAEMAGQEu
-AEsASAEuAFMAQgEuAFsAXwFDAGMAqQHhAHsAqQHjAGsAqQEpAXMAEAFJAXMAEAEbAAMAAQAHAAkA
-CAALAAAAvwXRAAAAMQPVAAAAcwbRAAAAYgPVAAAAhwbRAAAAfQPVAAAAYQbRAAAASQPVAAAAfQTZ
-AAAAwwDeAAAA6QXjAAIABgADAAEABwADAAIACAAFAAEACQAFAAEACgAHAAEACwAJAAEADAALAAEA
-DQANAAEADgAPAAEADwARAAIAGQATAAIAGgAVAAEAGwAVAAIAHAAXAASAAAABAAAAAAAAAAAAAAAA
-AAEAAAAEAAAAAAAAAAAAAABvADYAAAAAABAAAAAAAAAAAAAAAHgAHwYAAAAAEAAAAAAAAAAAAAAA
-eAA8BgAAAAAEAAAAAAAAAAAAAABvAKIDAAAAAAAAAAABAAAA3gQAAAAAAAAAU0NfNDJiY2VmNTA3
-MWM2NDI2ZTg0MTBhMTBkOTlhYWFhZTIAPE1vZHVsZT4ASW5wdXRJRABtc2NvcmxpYgBkZWZhdWx0
-SW5zdGFuY2UAUnVudGltZVR5cGVIYW5kbGUAR2V0VHlwZUZyb21IYW5kbGUASW5wdXROYW1lAE1p
-Y3Jvc29mdC5TcWxTZXJ2ZXIuRHRzLlBpcGVsaW5lAFR5cGUAZ2V0X0N1bHR1cmUAc2V0X0N1bHR1
-cmUAcmVzb3VyY2VDdWx0dXJlAEFwcGxpY2F0aW9uU2V0dGluZ3NCYXNlAEVkaXRvckJyb3dzYWJs
-ZVN0YXRlAENvbXBpbGVyR2VuZXJhdGVkQXR0cmlidXRlAERlYnVnZ2VyTm9uVXNlckNvZGVBdHRy
-aWJ1dGUARGVidWdnYWJsZUF0dHJpYnV0ZQBFZGl0b3JCcm93c2FibGVBdHRyaWJ1dGUAQXNzZW1i
-bHlUaXRsZUF0dHJpYnV0ZQBBc3NlbWJseVRyYWRlbWFya0F0dHJpYnV0ZQBUYXJnZXRGcmFtZXdv
-cmtBdHRyaWJ1dGUAQXNzZW1ibHlDb25maWd1cmF0aW9uQXR0cmlidXRlAEFzc2VtYmx5RGVzY3Jp
-cHRpb25BdHRyaWJ1dGUAQ29tcGlsYXRpb25SZWxheGF0aW9uc0F0dHJpYnV0ZQBBc3NlbWJseVBy
-b2R1Y3RBdHRyaWJ1dGUAQXNzZW1ibHlDb3B5cmlnaHRBdHRyaWJ1dGUAU1NJU1NjcmlwdENvbXBv
-bmVudEVudHJ5UG9pbnRBdHRyaWJ1dGUAQXNzZW1ibHlDb21wYW55QXR0cmlidXRlAFJ1bnRpbWVD
-b21wYXRpYmlsaXR5QXR0cmlidXRlAFByZUV4ZWN1dGUAUG9zdEV4ZWN1dGUAdmFsdWUAU3lzdGVt
-LlJ1bnRpbWUuVmVyc2lvbmluZwBHZXRTdHJpbmcAU3lzdGVtLkNvbXBvbmVudE1vZGVsAFNDXzQy
-YmNlZjUwNzFjNjQyNmU4NDEwYTEwZDk5YWFhYWUyLmRsbABnZXRfT3duZXJBZGRyZXNzX0lzTnVs
-bABzZXRfT3duZXJBZGRyZXNzX0lzTnVsbABzZXRfT3duZXJTdGF0ZU91dF9Jc051bGwAc2V0X093
-bmVyQWRkcmVzc091dF9Jc051bGwAc2V0X093bmVyQ2l0eU91dF9Jc051bGwAU2V0TnVsbABzZXRf
-SXRlbQBTeXN0ZW0AcmVzb3VyY2VNYW4AU2NyaXB0TWFpbgBTeXN0ZW0uQ29uZmlndXJhdGlvbgBT
-eXN0ZW0uR2xvYmFsaXphdGlvbgBTeXN0ZW0uUmVmbGVjdGlvbgBJbnZhbGlkT3BlcmF0aW9uRXhj
-ZXB0aW9uAFN0cmluZ0NvbXBhcmlzb24AQ3VsdHVyZUluZm8AT3V0cHV0TmFtZU1hcABPdXRwdXRN
-YXAAQ2hhcgBJbnB1dDBCdWZmZXIAUGlwZWxpbmVCdWZmZXIAU2NyaXB0QnVmZmVyAGdldF9SZXNv
-dXJjZU1hbmFnZXIALmN0b3IALmNjdG9yAFN5c3RlbS5EaWFnbm9zdGljcwBTeXN0ZW0uUnVudGlt
-ZS5Db21waWxlclNlcnZpY2VzAFN5c3RlbS5SZXNvdXJjZXMAU0NfNDJiY2VmNTA3MWM2NDI2ZTg0
-MTBhMTBkOTlhYWFhZTIuUHJvcGVydGllcy5SZXNvdXJjZXMucmVzb3VyY2VzAERlYnVnZ2luZ01v
-ZGVzAFNDXzQyYmNlZjUwNzFjNjQyNmU4NDEwYTEwZDk5YWFhYWUyLlByb3BlcnRpZXMAVmFyaWFi
-bGVzAEJ1ZmZlckNvbHVtbkluZGV4ZXMAR2V0Q29sdW1uSW5kZXhlcwBTZXR0aW5ncwBFcXVhbHMA
-Q29ubmVjdGlvbnMAZ2V0X093bmVyQWRkcmVzcwBzZXRfT3duZXJBZGRyZXNzAE9iamVjdABFbmRP
-ZlJvd3NldABTcGxpdABnZXRfRGVmYXVsdABVc2VyQ29tcG9uZW50AFBhcmVudENvbXBvbmVudABT
-Y3JpcHRDb21wb25lbnQATWljcm9zb2Z0LlNxbFNlcnZlci5UeFNjcmlwdABNaWNyb3NvZnQuU3Fs
-U2VydmVyLlBpcGVsaW5lSG9zdABzZXRfT3duZXJTdGF0ZU91dABzZXRfT3duZXJBZGRyZXNzT3V0
-AHNldF9Pd25lckNpdHlPdXQASW5wdXQwX1Byb2Nlc3NJbnB1dABJbnB1dDBfUHJvY2Vzc0lucHV0
-Um93AE5leHRSb3cAZ2V0X0Fzc2VtYmx5AACAm0kAcwBOAHUAbABsACAAcAByAG8AcABlAHIAdAB5
-ACAAYwBhAG4AbgBvAHQAIABiAGUAIABzAGUAdAAgAHQAbwAgAEYAYQBsAHMAZQAuACAAQQBzAHMA
-aQBnAG4AIABhACAAdgBhAGwAdQBlACAAdABvACAAdABoAGUAIABjAG8AbAB1AG0AbgAgAGkAbgBz
-AHQAZQBhAGQALgAAD0kAbgBwAHUAdAAgADAAAHFTAEMAXwA0ADIAYgBjAGUAZgA1ADAANwAxAGMA
-NgA0ADIANgBlADgANAAxADAAYQAxADAAZAA5ADkAYQBhAGEAYQBlADIALgBQAHIAbwBwAGUAcgB0
-AGkAZQBzAC4AUgBlAHMAbwB1AHIAYwBlAHMAAECG3VnRbPRAktp8ZtMi9eMABCABAQgDIAABBSAB
-ARERBCABAQ4FIAEBEVkEBwEdDgYgAR0OHQMJIAMBEj0dCBJBAwYSPQMGHQgEIAEOCAUgAgEIHAQg
-AQIIAyAAAgYgAgIOEXUFIAEdCAgGAAESeRF9BSAAEoCBByACAQ4SgIEIt3pcVhk04IkIiYRdzYCA
-zJEDBhIUAwYSGAMGEkUDBhJRAwYSVQMGEiAFIAEBEgwDIAAOBCABAQIJIAQBCA4SPRJBBSABARJF
-BAAAElEEAAASVQUAAQESVQQAABIgAwAAAQMoAA4DKAACBAgAElEECAASVQQIABIgCAEACAAAAAAA
-HgEAAQBUAhZXcmFwTm9uRXhjZXB0aW9uVGhyb3dzAQgBAAIAAAAAACgBACNTQ180MmJjZWY1MDcx
-YzY0MjZlODQxMGExMGQ5OWFhYWFlMgAABQEAAAAAFgEAEUNvcHlyaWdodCBAICAyMDI1AABJAQAa
-Lk5FVEZyYW1ld29yayxWZXJzaW9uPXY0LjcBAFQOFEZyYW1ld29ya0Rpc3BsYXlOYW1lEi5ORVQg
-RnJhbWV3b3JrIDQuNwQBAAAAAAC0AAAAzsrvvgEAAACRAAAAbFN5c3RlbS5SZXNvdXJjZXMuUmVz
-b3VyY2VSZWFkZXIsIG1zY29ybGliLCBWZXJzaW9uPTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwg
-UHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OSNTeXN0ZW0uUmVzb3VyY2VzLlJ1bnRpbWVS
-ZXNvdXJjZVNldAIAAAAAAAAAAAAAAFBBRFBBRFC0AAAAcDMAAAAAAAAAAAAAijMAAAAgAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAHwzAAAAAAAAAAAAAAAAX0NvckRsbE1haW4AbXNjb3JlZS5kbGwAAAAA
-AP8lACAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+LnJlbG9jAAAMAAAAAGAAAAACAAAAHAAAAAAAAAAAAAAAAAAAQAAAQgAAAAAAAAAAAAAAAAAAAACg
+MwAAAAAAAEgAAAACAAUAVCIAAGAQAAABAAAAAAAAALQyAAC4AAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4CKBAAAAoqHgIoEQAACioTMAUATQAAAAEAABEDbwYAAAYs
+RBeNGgAAASUWHyCdCgNvBgAABheNGgAAASUWHyydbxIAAAoLAwcWmm8KAAAGAwcXmm8MAAAGAwcY
+mgZvEwAACm8OAAAGKh4CKBIAAAYqKgIDBAUoFAAACipSAnsVAAAKAnsWAAAKFpRvFwAACiomAhYD
+KBgAAAoqIgIWKBkAAAoqWgMsCAIWKBoAAAoqcgEAAHBzGwAACnomAhcDKBgAAAoqWgMsCAIXKBoA
+AAoqcgEAAHBzGwAACnomAhgDKBgAAAoqWgMsCAIYKBoAAAoqcgEAAHBzGwAACnomAhkDKBgAAAoq
+WgMsCAIZKBoAAAoqcgEAAHBzGwAACnoeAigcAAAKKh4CKB0AAAoqfgIoHgAACgICcxYAAAZ9AQAA
+BAICcxcAAAZ9AgAABCqSBHKeAABwGm8fAAAKLBUCBQIDKCAAAAoOBHMFAAAGbxQAAAYqSisHAgNv
+FQAABgNvEAAABi3xKgYqOgIoIQAACgIDfQMAAAQqOgIoIQAACgIDfQQAAAQqHgIoIQAACiqufgUA
+AAQtHnKuAABw0AcAAAIoIgAACm8jAAAKcyQAAAqABQAABH4FAAAEKhp+BgAABCoeAoAGAAAEKhp+
+BwAABCoeAiglAAAKKi5zHQAABoAHAAAEKkJTSkIBAAEAAAAAAAwAAAB2NC4wLjMwMzE5AAAAAAUA
+bAAAADAGAAAjfgAAnAYAANwGAAAjU3RyaW5ncwAAAAB4DQAAIAEAACNVUwCYDgAAEAAAACNHVUlE
+AAAAqA4AALgBAAAjQmxvYgAAAAAAAAACAAABVxWiAQkBAAAA+gEzABYAAAEAAAAgAAAACAAAAAcA
+AAAeAAAAFQAAACUAAAAQAAAAAQAAAAMAAAALAAAADgAAAAEAAAAEAAAAAQAAAAAA7QIBAAAAAAAG
+AOQBsgQGAHgCsgQGADABnwQPACYFAAAGAF0B7wMGAMcB7wMGAKgB7wMGAF8C7wMGAAQC7wMGAB0C
+7wMGAHQB7wMGAI8BswIKADgCfQAKAHEEfQAOAGIEfQAKADgEfQAKABQGfQAGANEFogMGABMBnwQG
+AIIE0gQGACwE2gMSAOMA1wISAEQB1wISAMsAxQMGAPgAsgQGAFAEogMGANACogMGAAEEogMGABsE
+ogMGAJ4AogMGAE8AogMGANAG7wMAAAAAJQAAAAAAAQABAAEAEAC6AwAAEAABAAEAAQAQAFUEAAA5
+AAEABQABABAA9gUAAEUAAQASAAEAEACjBQAASQADABYAAQAQAGQFAABJAAQAFwAAABAA2QQ1BUkA
+BQAYAAABEACTBTUFYQAHABwABgCjBYkABgBkBY0AAQAEBpEAAQAEBpEAEQCuA5UAEQC7AJkAEQA/
+AJ0AUCAAAAAAxgCWAgYAAQBYIAAAAADGAKECBgABAGAgAAAAAMYArQahAAEAuSAAAAAAhhiSBAYA
+AgDBIAAAAACGGJIELwACAMwgAAAAAIYIrwWnAAUA4SAAAAAAhgjABRAABQDrIAAAAACGCBUDUQAG
+APQgAAAAAIYILQOrAAYACyEAAAAAhgh0BhAABwAVIQAAAACGCF4DqwAIACwhAAAAAIYIiAYQAAkA
+NiEAAAAAhgh5A6sACgBNIQAAAACGCGIGEAALAFchAAAAAIYIRQOrAAwAbiEAAAAAhgDEBlEADQB2
+IQAAAACGANgFUQANAH4hAAAAAIYYkgQGAA0AniEAAAAAxgCgBrAADQDDIQAAAADGAZkGoQARANYh
+AAAAAMYBrQahABIA2CEAAAAAhhiSBLoAEwDnIQAAAACGGJIEugAUAPYhAAAAAIMYkgQGABUA/iEA
+AAAAkwh+BMAAFQAqIgAAAACTCKMAxQAVADEiAAAAAJMIrwDKABUAOSIAAAAAlgjqBdAAFgBAIgAA
+AACGGJIEBgAWAEgiAAAAAJEYmATVABYAAAABAMgGAAABAHcEAAACAG4FAAADAEYEAAABAK0CAAAB
+AK0CAAABAK0CAAABAK0CAAABAK0CAAABAK0CAAABAK0CAAABAK0CAAABAC4AAAACAHMAAAADAHcE
+AAAEAEYEAAABAHcEAAABAMgGAAABABoGAAABABoGAAABAK0CCQCSBAEAEQCSBAYAGQCSBAoAKQCS
+BBAAMQCSBBAAOQCSBBAAQQCSBBAASQCSBBAAUQCSBBAAWQCSBBAAYQCSBBAAaQCSBAYAmQCSBAYA
+uQCSBBUAyQCSBAYAiQCWAgYAiQChAgYA2QDkBSIA2QCpAykAcQCSBC8AcQB3BDkAcQBuBT0AeQDN
+AkEAcQCZA0YAcQCKA0wAcQCRAwEA4QCSBBAAcQDEBlEAcQDYBVEAiQCSBAYA2QCcBVUAiQCCBVwA
+kQCSBAYA8QBhAGIA8QDMBmkAoQCSBG8AwQCSBAYALgALAPAALgATAPkALgAbABgBLgAjACEBLgAr
+AEoBLgAzAEoBLgA7AEoBLgBDACEBLgBLAFABLgBTAEoBLgBbAGcBQwBjALEB4QB7ALEB4wBrALEB
+KQFzABgBSQFzABgBGwADAAEABwAJAAgACwAAAMQF2QAAADED3QAAAHgG2QAAAGID3QAAAIwG2QAA
+AH0D3QAAAGYG2QAAAEkD3QAAAIIE4QAAAMMA5gAAAO4F6wACAAYAAwABAAcAAwACAAgABQABAAkA
+BQABAAoABwABAAsACQABAAwACwABAA0ADQABAA4ADwABAA8AEQACABkAEwACABoAFQABABsAFQAC
+ABwAFwAEgAAAAQAAAAAAAAAAAAAAAAABAAAABAAAAAAAAAAAAAAAdwA2AAAAAAAQAAAAAAAAAAAA
+AACAACQGAAAAABAAAAAAAAAAAAAAAIAAQQYAAAAABAAAAAAAAAAAAAAAdwCiAwAAAAAAAAAAAQAA
+AOMEAAAAAABTQ180MmJjZWY1MDcxYzY0MjZlODQxMGExMGQ5OWFhYWFlMgA8TW9kdWxlPgBJbnB1
+dElEAG1zY29ybGliAGRlZmF1bHRJbnN0YW5jZQBSdW50aW1lVHlwZUhhbmRsZQBHZXRUeXBlRnJv
+bUhhbmRsZQBJbnB1dE5hbWUATWljcm9zb2Z0LlNxbFNlcnZlci5EdHMuUGlwZWxpbmUAVHlwZQBn
+ZXRfQ3VsdHVyZQBzZXRfQ3VsdHVyZQByZXNvdXJjZUN1bHR1cmUAQXBwbGljYXRpb25TZXR0aW5n
+c0Jhc2UARWRpdG9yQnJvd3NhYmxlU3RhdGUAQ29tcGlsZXJHZW5lcmF0ZWRBdHRyaWJ1dGUARGVi
+dWdnZXJOb25Vc2VyQ29kZUF0dHJpYnV0ZQBEZWJ1Z2dhYmxlQXR0cmlidXRlAEVkaXRvckJyb3dz
+YWJsZUF0dHJpYnV0ZQBBc3NlbWJseVRpdGxlQXR0cmlidXRlAEFzc2VtYmx5VHJhZGVtYXJrQXR0
+cmlidXRlAFRhcmdldEZyYW1ld29ya0F0dHJpYnV0ZQBBc3NlbWJseUNvbmZpZ3VyYXRpb25BdHRy
+aWJ1dGUAQXNzZW1ibHlEZXNjcmlwdGlvbkF0dHJpYnV0ZQBDb21waWxhdGlvblJlbGF4YXRpb25z
+QXR0cmlidXRlAEFzc2VtYmx5UHJvZHVjdEF0dHJpYnV0ZQBBc3NlbWJseUNvcHlyaWdodEF0dHJp
+YnV0ZQBTU0lTU2NyaXB0Q29tcG9uZW50RW50cnlQb2ludEF0dHJpYnV0ZQBBc3NlbWJseUNvbXBh
+bnlBdHRyaWJ1dGUAUnVudGltZUNvbXBhdGliaWxpdHlBdHRyaWJ1dGUAUHJlRXhlY3V0ZQBQb3N0
+RXhlY3V0ZQB2YWx1ZQBTeXN0ZW0uUnVudGltZS5WZXJzaW9uaW5nAEdldFN0cmluZwBTeXN0ZW0u
+Q29tcG9uZW50TW9kZWwAU0NfNDJiY2VmNTA3MWM2NDI2ZTg0MTBhMTBkOTlhYWFhZTIuZGxsAGdl
+dF9Pd25lckFkZHJlc3NfSXNOdWxsAHNldF9Pd25lckFkZHJlc3NfSXNOdWxsAHNldF9Pd25lclN0
+YXRlT3V0X0lzTnVsbABzZXRfT3duZXJBZGRyZXNzT3V0X0lzTnVsbABzZXRfT3duZXJDaXR5T3V0
+X0lzTnVsbABTZXROdWxsAHNldF9JdGVtAFN5c3RlbQBUcmltAHJlc291cmNlTWFuAFNjcmlwdE1h
+aW4AU3lzdGVtLkNvbmZpZ3VyYXRpb24AU3lzdGVtLkdsb2JhbGl6YXRpb24AU3lzdGVtLlJlZmxl
+Y3Rpb24ASW52YWxpZE9wZXJhdGlvbkV4Y2VwdGlvbgBTdHJpbmdDb21wYXJpc29uAEN1bHR1cmVJ
+bmZvAE91dHB1dE5hbWVNYXAAT3V0cHV0TWFwAENoYXIASW5wdXQwQnVmZmVyAFBpcGVsaW5lQnVm
+ZmVyAFNjcmlwdEJ1ZmZlcgBnZXRfUmVzb3VyY2VNYW5hZ2VyAC5jdG9yAC5jY3RvcgBTeXN0ZW0u
+RGlhZ25vc3RpY3MAU3lzdGVtLlJ1bnRpbWUuQ29tcGlsZXJTZXJ2aWNlcwBTeXN0ZW0uUmVzb3Vy
+Y2VzAFNDXzQyYmNlZjUwNzFjNjQyNmU4NDEwYTEwZDk5YWFhYWUyLlByb3BlcnRpZXMuUmVzb3Vy
+Y2VzLnJlc291cmNlcwBEZWJ1Z2dpbmdNb2RlcwBTQ180MmJjZWY1MDcxYzY0MjZlODQxMGExMGQ5
+OWFhYWFlMi5Qcm9wZXJ0aWVzAFZhcmlhYmxlcwBCdWZmZXJDb2x1bW5JbmRleGVzAEdldENvbHVt
+bkluZGV4ZXMAU2V0dGluZ3MARXF1YWxzAENvbm5lY3Rpb25zAGdldF9Pd25lckFkZHJlc3MAc2V0
+X093bmVyQWRkcmVzcwBPYmplY3QARW5kT2ZSb3dzZXQAU3BsaXQAZ2V0X0RlZmF1bHQAVXNlckNv
+bXBvbmVudABQYXJlbnRDb21wb25lbnQAU2NyaXB0Q29tcG9uZW50AE1pY3Jvc29mdC5TcWxTZXJ2
+ZXIuVHhTY3JpcHQATWljcm9zb2Z0LlNxbFNlcnZlci5QaXBlbGluZUhvc3QAc2V0X093bmVyU3Rh
+dGVPdXQAc2V0X093bmVyQWRkcmVzc091dABzZXRfT3duZXJDaXR5T3V0AElucHV0MF9Qcm9jZXNz
+SW5wdXQASW5wdXQwX1Byb2Nlc3NJbnB1dFJvdwBOZXh0Um93AGdldF9Bc3NlbWJseQAAAAAAgJtJ
+AHMATgB1AGwAbAAgAHAAcgBvAHAAZQByAHQAeQAgAGMAYQBuAG4AbwB0ACAAYgBlACAAcwBlAHQA
+IAB0AG8AIABGAGEAbABzAGUALgAgAEEAcwBzAGkAZwBuACAAYQAgAHYAYQBsAHUAZQAgAHQAbwAg
+AHQAaABlACAAYwBvAGwAdQBtAG4AIABpAG4AcwB0AGUAYQBkAC4AAA9JAG4AcAB1AHQAIAAwAABx
+UwBDAF8ANAAyAGIAYwBlAGYANQAwADcAMQBjADYANAAyADYAZQA4ADQAMQAwAGEAMQAwAGQAOQA5
+AGEAYQBhAGEAZQAyAC4AUAByAG8AcABlAHIAdABpAGUAcwAuAFIAZQBzAG8AdQByAGMAZQBzAAAO
+rVhLV4jzQIzk5HTMZMmsAAQgAQEIAyAAAQUgAQEREQQgAQEOBSABARFZBgcCHQMdDgYgAR0OHQMF
+IAEOHQMJIAMBEj0dCBJBAwYSPQMGHQgEIAEOCAUgAgEIHAQgAQIIAyAAAgYgAgIOEXUFIAEdCAgG
+AAESeRF9BSAAEoCBByACAQ4SgIEIt3pcVhk04IkIiYRdzYCAzJEDBhIUAwYSGAMGEkUDBhJRAwYS
+VQMGEiAFIAEBEgwDIAAOBCABAQIJIAQBCA4SPRJBBSABARJFBAAAElEEAAASVQUAAQESVQQAABIg
+AwAAAQMoAA4DKAACBAgAElEECAASVQQIABIgCAEACAAAAAAAHgEAAQBUAhZXcmFwTm9uRXhjZXB0
+aW9uVGhyb3dzAQgBAAIAAAAAACgBACNTQ180MmJjZWY1MDcxYzY0MjZlODQxMGExMGQ5OWFhYWFl
+MgAABQEAAAAAFgEAEUNvcHlyaWdodCBAICAyMDI1AABJAQAaLk5FVEZyYW1ld29yayxWZXJzaW9u
+PXY0LjcBAFQOFEZyYW1ld29ya0Rpc3BsYXlOYW1lEi5ORVQgRnJhbWV3b3JrIDQuNwQBAAAAAAC0
+AAAAzsrvvgEAAACRAAAAbFN5c3RlbS5SZXNvdXJjZXMuUmVzb3VyY2VSZWFkZXIsIG1zY29ybGli
+LCBWZXJzaW9uPTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVj
+NTYxOTM0ZTA4OSNTeXN0ZW0uUmVzb3VyY2VzLlJ1bnRpbWVSZXNvdXJjZVNldAIAAAAAAAAAAAAA
+AFBBRFBBRFC0AAAAlDMAAAAAAAAAAAAArjMAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAzAAAA
+AAAAAAAAAAAAX0NvckRsbE1haW4AbXNjb3JlZS5kbGwAAAAAAP8lACAAEAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAQAQAAAAGAAAgAAAAAAAAAAAAAAAAAAAAQABAAAAMAAAgAAAAAAAAAAAAAAAAAAAAQAAAAAA
 SAAAAFhAAADsAwAAAAAAAAAAAADsAzQAAABWAFMAXwBWAEUAUgBTAEkATwBOAF8ASQBOAEYATwAA
@@ -1855,7 +1912,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAMAAAAnDMAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAMAAAAwDMAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -1907,16 +1964,16 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]]></arrayElement>
               </properties>
               <inputs>
                 <input
-                  refId="Package\Data Flow Task\SplitOwnerAddress.Inputs[Input 0]"
+                  refId="Package\Import Fresh Data\SplitOwnerAddress.Inputs[Input 0]"
                   hasSideEffects="true"
                   name="Input 0">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Data Flow Task\SplitOwnerAddress.Inputs[Input 0].Columns[OwnerAddress]"
+                      refId="Package\Import Fresh Data\SplitOwnerAddress.Inputs[Input 0].Columns[OwnerAddress]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="OwnerAddress"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[OwnerAddress]"
                       usageType="readWrite" />
                   </inputColumns>
                   <externalMetadataColumns />
@@ -1924,27 +1981,27 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]]></arrayElement>
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0]"
+                  refId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0]"
                   name="Output 0"
-                  synchronousInputId="Package\Data Flow Task\SplitOwnerAddress.Inputs[Input 0]">
+                  synchronousInputId="Package\Import Fresh Data\SplitOwnerAddress.Inputs[Input 0]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_Address_Out]"
+                      refId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_Address_Out]"
                       dataType="wstr"
                       length="50"
-                      lineageId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_Address_Out]"
+                      lineageId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_Address_Out]"
                       name="Owner_Address_Out" />
                     <outputColumn
-                      refId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_City_Out]"
+                      refId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_City_Out]"
                       dataType="wstr"
                       length="50"
-                      lineageId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_City_Out]"
+                      lineageId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_City_Out]"
                       name="Owner_City_Out" />
                     <outputColumn
-                      refId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_State_Out]"
+                      refId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_State_Out]"
                       dataType="wstr"
                       length="50"
-                      lineageId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_State_Out]"
+                      lineageId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_State_Out]"
                       name="Owner_State_Out" />
                   </outputColumns>
                   <externalMetadataColumns />
@@ -1952,7 +2009,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]]></arrayElement>
               </outputs>
             </component>
             <component
-              refId="Package\Data Flow Task\SplitPropertyAddress"
+              refId="Package\Import Fresh Data\SplitPropertyAddress"
               componentClassID="Microsoft.ManagedComponentHost"
               contactInfo="Includes and runs custom script code. For example, apply a business rule that limits the range of valid values in an &quot;income&quot; column or add values in two columns and calculate the average of the sum.;Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;13"
               description="Includes and runs custom script code. For example, apply a business rule that limits the range of valid values in an &quot;income&quot; column or add values in two columns and calculate the average of the sum."
@@ -2866,44 +2923,44 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=]]></arrayElement>
               </properties>
               <connections>
                 <connection
-                  refId="Package\Data Flow Task\SplitPropertyAddress.Connections[Connection]"
+                  refId="Package\Import Fresh Data\SplitPropertyAddress.Connections[Connection]"
                   connectionManagerID="Package.ConnectionManagers[Excel Connection Manager]"
                   connectionManagerRefId="Package.ConnectionManagers[Excel Connection Manager]"
                   name="Connection" />
               </connections>
               <inputs>
                 <input
-                  refId="Package\Data Flow Task\SplitPropertyAddress.Inputs[Input 0]"
+                  refId="Package\Import Fresh Data\SplitPropertyAddress.Inputs[Input 0]"
                   hasSideEffects="true"
                   name="Input 0">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Data Flow Task\SplitPropertyAddress.Inputs[Input 0].Columns[PropertyAddress]"
+                      refId="Package\Import Fresh Data\SplitPropertyAddress.Inputs[Input 0].Columns[PropertyAddress]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="PropertyAddress"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]" />
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[PropertyAddress]" />
                   </inputColumns>
                   <externalMetadataColumns />
                 </input>
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Data Flow Task\SplitPropertyAddress.Outputs[Output 0]"
+                  refId="Package\Import Fresh Data\SplitPropertyAddress.Outputs[Output 0]"
                   name="Output 0"
-                  synchronousInputId="Package\Data Flow Task\SplitPropertyAddress.Inputs[Input 0]">
+                  synchronousInputId="Package\Import Fresh Data\SplitPropertyAddress.Inputs[Input 0]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyAddressOut]"
+                      refId="Package\Import Fresh Data\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyAddressOut]"
                       dataType="wstr"
                       length="50"
-                      lineageId="Package\Data Flow Task\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyAddressOut]"
+                      lineageId="Package\Import Fresh Data\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyAddressOut]"
                       name="PropertyAddressOut" />
                     <outputColumn
-                      refId="Package\Data Flow Task\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyCityOut]"
+                      refId="Package\Import Fresh Data\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyCityOut]"
                       dataType="wstr"
                       length="50"
-                      lineageId="Package\Data Flow Task\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyCityOut]"
+                      lineageId="Package\Import Fresh Data\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyCityOut]"
                       name="PropertyCityOut" />
                   </outputColumns>
                   <externalMetadataColumns />
@@ -2911,7 +2968,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=]]></arrayElement>
               </outputs>
             </component>
             <component
-              refId="Package\Data Flow Task\SQL_NashvilleHousingData"
+              refId="Package\Import Fresh Data\SQL_NashvilleHousingData"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
               description="OLE DB Destination"
@@ -2968,7 +3025,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=]]></arrayElement>
               </properties>
               <connections>
                 <connection
-                  refId="Package\Data Flow Task\SQL_NashvilleHousingData.Connections[OleDbConnection]"
+                  refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[TPV.Sandbox]"
                   connectionManagerRefId="Package.ConnectionManagers[TPV.Sandbox]"
                   description="The OLE DB runtime connection used to access the database."
@@ -2976,273 +3033,273 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=]]></arrayElement>
               </connections>
               <inputs>
                 <input
-                  refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input]"
+                  refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
                   name="OLE DB Destination Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[ParcelID]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[ParcelID]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="ParcelID"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[ParcelID]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[ParcelID]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[ParcelID]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[ParcelID]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[PropertyAddressOut]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[PropertyAddressOut]"
                       cachedDataType="wstr"
                       cachedLength="50"
                       cachedName="PropertyAddressOut"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Property_Address]"
-                      lineageId="Package\Data Flow Task\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyAddressOut]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Property_Address]"
+                      lineageId="Package\Import Fresh Data\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyAddressOut]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[PropertyCityOut]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[PropertyCityOut]"
                       cachedDataType="wstr"
                       cachedLength="50"
                       cachedName="PropertyCityOut"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Property_City]"
-                      lineageId="Package\Data Flow Task\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyCityOut]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Property_City]"
+                      lineageId="Package\Import Fresh Data\SplitPropertyAddress.Outputs[Output 0].Columns[PropertyCityOut]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[LandUse]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[LandUse]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="LandUse"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Land_Use]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LandUse]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Land_Use]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LandUse]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of SaleDate]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of SaleDate]"
                       cachedDataType="wstr"
                       cachedLength="50"
                       cachedName="Copy of SaleDate"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sale_Date]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SaleDate]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sale_Date]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SaleDate]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of SalePrice]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of SalePrice]"
                       cachedDataType="i4"
                       cachedName="Copy of SalePrice"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sale_Price]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SalePrice]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sale_Price]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of SalePrice]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[LegalReference]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[LegalReference]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="LegalReference"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Legal_reference]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[LegalReference]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Legal_reference]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[LegalReference]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[SoldAsVacant_Bool]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[SoldAsVacant_Bool]"
                       cachedDataType="bool"
                       cachedName="SoldAsVacant_Bool"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sold_As_Vacant]"
-                      lineageId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Output].Columns[SoldAsVacant_Bool]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sold_As_Vacant]"
+                      lineageId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Output].Columns[SoldAsVacant_Bool]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[OwnerName]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[OwnerName]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="OwnerName"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_name]"
-                      lineageId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output].Columns[OwnerName]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_name]"
+                      lineageId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output].Columns[OwnerName]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Owner_Address_Out]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Owner_Address_Out]"
                       cachedDataType="wstr"
                       cachedLength="50"
                       cachedName="Owner_Address_Out"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_Address]"
-                      lineageId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_Address_Out]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_Address]"
+                      lineageId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_Address_Out]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Owner_City_Out]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Owner_City_Out]"
                       cachedDataType="wstr"
                       cachedLength="50"
                       cachedName="Owner_City_Out"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_City]"
-                      lineageId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_City_Out]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_City]"
+                      lineageId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_City_Out]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Owner_State_Out]"
-                      cachedDataType="wstr"
-                      cachedLength="50"
-                      cachedName="Owner_State_Out"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Onwer_State]"
-                      lineageId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_State_Out]" />
-                    <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of Acreage]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of Acreage]"
                       cachedDataType="numeric"
                       cachedName="Copy of Acreage"
                       cachedPrecision="18"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Acreage]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Acreage]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Acreage]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Acreage]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of TaxDistrict]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of TaxDistrict]"
                       cachedDataType="wstr"
                       cachedLength="100"
                       cachedName="Copy of TaxDistrict"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Tax_District]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of TaxDistrict]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Tax_District]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of TaxDistrict]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of LandValue]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of LandValue]"
                       cachedDataType="i4"
                       cachedName="Copy of LandValue"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Land_Value]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of LandValue]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Land_Value]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of LandValue]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of BuildingValue]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of BuildingValue]"
                       cachedDataType="i4"
                       cachedName="Copy of BuildingValue"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Building_Value]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of BuildingValue]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Building_Value]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of BuildingValue]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of YearBuilt]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of YearBuilt]"
                       cachedDataType="wstr"
                       cachedLength="10"
                       cachedName="Copy of YearBuilt"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Year_Build]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of YearBuilt]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Year_Build]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of YearBuilt]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of Bedrooms]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of Bedrooms]"
                       cachedDataType="i4"
                       cachedName="Copy of Bedrooms"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Bedrooms]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Bedrooms]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Bedrooms]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of Bedrooms]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of FullBath]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of FullBath]"
                       cachedDataType="i4"
                       cachedName="Copy of FullBath"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[FullBath]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of FullBath]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[FullBath]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of FullBath]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of HalfBath]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of HalfBath]"
                       cachedDataType="i4"
                       cachedName="Copy of HalfBath"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[halfBath]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of HalfBath]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[halfBath]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of HalfBath]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of UniqueID]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Copy of UniqueID]"
                       cachedDataType="i4"
                       cachedName="Copy of UniqueID"
-                      externalMetadataColumnId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[UniqueID]"
-                      lineageId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output].Columns[Copy of UniqueID]" />
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[UniqueID]"
+                      lineageId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output].Columns[Copy of UniqueID]" />
+                    <inputColumn
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].Columns[Owner_State_Out]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="Owner_State_Out"
+                      externalMetadataColumnId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_State]"
+                      lineageId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0].Columns[Owner_State_Out]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[UniqueID]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[UniqueID]"
                       dataType="i4"
                       name="UniqueID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[ParcelID]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[ParcelID]"
                       dataType="wstr"
                       length="50"
                       name="ParcelID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Land_Use]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Land_Use]"
                       dataType="wstr"
                       length="50"
                       name="Land_Use" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Property_Address]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Property_Address]"
                       dataType="wstr"
                       length="255"
                       name="Property_Address" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Property_City]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Property_City]"
                       dataType="wstr"
                       length="255"
                       name="Property_City" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sale_Date]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sale_Date]"
                       dataType="wstr"
                       length="10"
                       name="Sale_Date" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sale_Price]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sale_Price]"
                       dataType="i4"
                       name="Sale_Price" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Legal_reference]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Legal_reference]"
                       dataType="wstr"
                       length="255"
                       name="Legal_reference" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sold_As_Vacant]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Sold_As_Vacant]"
                       dataType="bool"
                       name="Sold_As_Vacant" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_name]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_name]"
                       dataType="wstr"
                       length="255"
                       name="Owner_name" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_Address]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_Address]"
                       dataType="wstr"
                       length="255"
                       name="Owner_Address" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_City]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_City]"
                       dataType="wstr"
                       length="255"
                       name="Owner_City" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Onwer_State]"
-                      dataType="wstr"
-                      length="2"
-                      name="Onwer_State" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Acreage]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Acreage]"
                       dataType="numeric"
                       name="Acreage"
                       precision="18"
                       scale="2" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Tax_District]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Tax_District]"
                       dataType="wstr"
                       length="100"
                       name="Tax_District" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Land_Value]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Land_Value]"
                       dataType="i4"
                       name="Land_Value" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Building_Value]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Building_Value]"
                       dataType="i4"
                       name="Building_Value" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Year_Build]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Year_Build]"
                       dataType="wstr"
                       length="10"
                       name="Year_Build" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Bedrooms]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Bedrooms]"
                       dataType="i4"
                       name="Bedrooms" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[FullBath]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[FullBath]"
                       dataType="i4"
                       name="FullBath" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[halfBath]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[halfBath]"
                       dataType="i4"
                       name="halfBath" />
+                    <externalMetadataColumn
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input].ExternalColumns[Owner_State]"
+                      dataType="wstr"
+                      length="2"
+                      name="Owner_State" />
                   </externalMetadataColumns>
                 </input>
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Data Flow Task\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output]"
+                  refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input]">
+                  synchronousInputId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      lineageId="Package\Import Fresh Data\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Data Flow Task\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      refId="Package\Import Fresh Data\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\Import Fresh Data\SQL_NashvilleHousingData.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -3253,35 +3310,105 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=]]></arrayElement>
           </components>
           <paths>
             <path
-              refId="Package\Data Flow Task.Paths[Data Conversion Output]"
-              endId="Package\Data Flow Task\SplitPropertyAddress.Inputs[Input 0]"
+              refId="Package\Import Fresh Data.Paths[Data Conversion Output]"
+              endId="Package\Import Fresh Data\SplitPropertyAddress.Inputs[Input 0]"
               name="Data Conversion Output"
-              startId="Package\Data Flow Task\Convert Data.Outputs[Data Conversion Output]" />
+              startId="Package\Import Fresh Data\Convert Data.Outputs[Data Conversion Output]" />
             <path
-              refId="Package\Data Flow Task.Paths[Derived Column Output]"
-              endId="Package\Data Flow Task\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input]"
+              refId="Package\Import Fresh Data.Paths[Derived Column Output]"
+              endId="Package\Import Fresh Data\SQL_NashvilleHousingData.Inputs[OLE DB Destination Input]"
               name="Derived Column Output"
-              startId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Outputs[Derived Column Output]" />
+              startId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Outputs[Derived Column Output]" />
             <path
-              refId="Package\Data Flow Task.Paths[Excel Source Output]"
-              endId="Package\Data Flow Task\Convert Data.Inputs[Data Conversion Input]"
+              refId="Package\Import Fresh Data.Paths[Excel Source Output]"
+              endId="Package\Import Fresh Data\Convert Data.Inputs[Data Conversion Input]"
               name="Excel Source Output"
-              startId="Package\Data Flow Task\Excel Source.Outputs[Excel Source Output]" />
+              startId="Package\Import Fresh Data\Excel Source.Outputs[Excel Source Output]" />
             <path
-              refId="Package\Data Flow Task.Paths[Output 0]"
-              endId="Package\Data Flow Task\SplitOwnerAddress.Inputs[Input 0]"
+              refId="Package\Import Fresh Data.Paths[Output 0]"
+              endId="Package\Import Fresh Data\SplitOwnerAddress.Inputs[Input 0]"
               name="Output 0"
-              startId="Package\Data Flow Task\SplitPropertyAddress.Outputs[Output 0]" />
+              startId="Package\Import Fresh Data\SplitPropertyAddress.Outputs[Output 0]" />
             <path
-              refId="Package\Data Flow Task.Paths[Output 01]"
-              endId="Package\Data Flow Task\Convert SoldAsVacant to boolean.Inputs[Derived Column Input]"
+              refId="Package\Import Fresh Data.Paths[Output 01]"
+              endId="Package\Import Fresh Data\Convert SoldAsVacant to boolean.Inputs[Derived Column Input]"
               name="Output 0"
-              startId="Package\Data Flow Task\SplitOwnerAddress.Outputs[Output 0]" />
+              startId="Package\Import Fresh Data\SplitOwnerAddress.Outputs[Output 0]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
     </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Truncate Table Tenessee_Housing_Data"
+      DTS:CreationName="Microsoft.DbMaintenanceTSQLExecuteTask"
+      DTS:Description="Execute T-SQL Statement Task"
+      DTS:DTSID="{7EC8AC91-D990-4AD2-9ADC-9A6CD90BE89A}"
+      DTS:ExecutableType="Microsoft.DbMaintenanceTSQLExecuteTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Truncate Table Tenessee_Housing_Data"
+      DTS:TaskContact="Execute T-SQL Statement Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{BE3FA591-E053-4A4C-8755-ED5398420DE1}"
+          SQLTask:SqlStatementSource="Truncate Table [Sandbox].[dbo].[Nahsville_Housing_Data]"
+          SQLTask:ServerVersion="9"
+          SQLTask:ExtendedLogging="True"
+          SQLTask:LocalConnectionForLogging=""
+          SQLTask:TaskName=""
+          SQLTask:IgnoreDatabasesInNotOnlineState="False" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Update Null Property_Address and Property_City"
+      DTS:CreationName="Microsoft.DbMaintenanceTSQLExecuteTask"
+      DTS:Description="Execute T-SQL Statement Task"
+      DTS:DTSID="{0FEBF8A6-A93F-469F-9878-55CD6669E011}"
+      DTS:ExecutableType="Microsoft.DbMaintenanceTSQLExecuteTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Update Null Property_Address and Property_City"
+      DTS:TaskContact="Execute T-SQL Statement Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{BE3FA591-E053-4A4C-8755-ED5398420DE1}"
+          SQLTask:SqlStatementSource="update [Sandbox].[dbo].[Nahsville_Housing_Data] set [Property_Address] = null, [Property_City] = null where [Property_Address] = ' '&#xA;GO&#xA;&#xA;Update a&#xA;SET [Property_Address] = ISNULL(a.[Property_Address],b.[Property_Address]), [Property_City] = ISNULL(a.[Property_City],b.[Property_City]) &#xA;From [Sandbox].[dbo].[Nahsville_Housing_Data] a&#xA;JOIN [Sandbox].[dbo].[Nahsville_Housing_Data] b&#xA;&#x9;on a.[ParcelID] = b.[ParcelID]&#xA;&#x9;AND a.[UniqueID] &lt;&gt; b.[UniqueID]&#xA;Where a.[Property_Address] is null "
+          SQLTask:ServerVersion="9"
+          SQLTask:ExtendedLogging="True"
+          SQLTask:LocalConnectionForLogging=""
+          SQLTask:TaskName=""
+          SQLTask:IgnoreDatabasesInNotOnlineState="False" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
   </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{158E1F07-0E30-4C22-98DF-0D8C4D9B6D39}"
+      DTS:From="Package\Truncate Table Tenessee_Housing_Data"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Import Fresh Data" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{D32490FA-772E-4168-A207-8285B9D55843}"
+      DTS:From="Package\Import Fresh Data"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Update Null Property_Address and Property_City" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{A1D450B1-9F96-4E77-B21B-94853AA7EEF2}"
+      DTS:From="Package\Update Null Property_Address and Property_City"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 2"
+      DTS:To="Package\Delete Duplicate Rows" />
+  </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
 <!--If you manually edit this section and make a mistake, you can delete it. -->
@@ -3293,194 +3420,246 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=]]></arrayElement>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="150.4,41.6"
-          Id="Package\Data Flow Task"
-          TopLeft="5.5,5.5" />
+          Id="Package\Import Fresh Data"
+          TopLeft="83.533333287802,106.23333333936" />
+        <NodeLayout
+          Size="224.8,41.6"
+          Id="Package\Truncate Table Tenessee_Housing_Data"
+          TopLeft="45.5,5.50000000000007" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="158.316666643901,47.1000000000001">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,59.13333333936"
+              Start="0,0"
+              End="0,51.63333333936">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,51.63333333936" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="304.8,41.6"
+          Id="Package\Update Null Property_Address and Property_City"
+          TopLeft="5.50000000000003,208.7" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="158.316666643901,147.83333333936">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60.86666666064"
+              Start="0,0"
+              End="0,53.36666666064">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,53.36666666064" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="183.2,41.6"
+          Id="Package\Delete Duplicate Rows"
+          TopLeft="66.3000000000001,310.3" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="157.9,250.3">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </Package>
   <TaskHost
-    design-time-name="Package\Data Flow Task">
+    design-time-name="Package\Import Fresh Data">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="140,41.6"
-          Id="Package\Data Flow Task\Excel Source"
-          TopLeft="29.6666653462583,7.23333332127995" />
-        <NodeLayout
-          Size="167.2,41.6"
-          Id="Package\Data Flow Task\SplitOwnerAddress"
-          TopLeft="43.3333309657044,252.199998246233" />
-        <NodeLayout
-          Size="176,41.6"
-          Id="Package\Data Flow Task\SplitPropertyAddress"
-          TopLeft="28.3333317852682,164.666665521595" />
-        <NodeLayout
-          Size="168.8,41.6"
-          Id="Package\Data Flow Task\Convert Data"
-          TopLeft="9.99999945362407,83.1999994214377" />
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Data Conversion Output]"
-          TopLeft="94.3999994536241,124.799999421438">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="21.9333323316441,39.8666661001573"
-              Start="0,0"
-              End="21.9333323316441,32.3666661001573">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,15.9333330500787" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,15.9333330500787"
-                    Point2="0,19.9333330500787"
-                    Point3="4,19.9333330500787" />
-                  <mssgle:LineSegment
-                    End="17.9333323316441,19.9333330500787" />
-                  <mssgle:CubicBezierSegment
-                    Point1="17.9333323316441,19.9333330500787"
-                    Point2="21.9333323316441,19.9333330500787"
-                    Point3="21.9333323316441,23.9333330500787" />
-                  <mssgle:LineSegment
-                    End="21.9333323316441,32.3666661001573" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Output 0]"
-          TopLeft="116.333331785268,206.266665521595">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="10.5999991804363,45.9333327246378"
-              Start="0,0"
-              End="10.5999991804363,38.4333327246378">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,18.9666663623189" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,18.9666663623189"
-                    Point2="0,22.9666663623189"
-                    Point3="4,22.9666663623189" />
-                  <mssgle:LineSegment
-                    End="6.59999918043626,22.9666663623189" />
-                  <mssgle:CubicBezierSegment
-                    Point1="6.59999918043626,22.9666663623189"
-                    Point2="10.5999991804363,22.9666663623189"
-                    Point3="10.5999991804363,26.9666663623189" />
-                  <mssgle:LineSegment
-                    End="10.5999991804363,38.4333327246378" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Excel Source Output]"
-          TopLeft="97.0333323999412,48.83333332128">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,34.3666661001577"
-              Start="0,0"
-              End="0,26.8666661001577">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,26.8666661001577" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="234.4,41.6"
-          Id="Package\Data Flow Task\Convert SoldAsVacant to boolean"
-          TopLeft="6.66666630241599,329.33333104319" />
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Output 01]"
-          TopLeft="125.39999863406,293.799998246233">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,35.5333327969576"
-              Start="0,0"
-              End="0,28.0333327969576">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,28.0333327969576" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="207.2,41.6"
-          Id="Package\Data Flow Task\SQL_NashvilleHousingData"
-          TopLeft="30.8333316486743,424.666663713588" />
+          Id="Package\Import Fresh Data\SQL_NashvilleHousingData"
+          TopLeft="19.1000000000001,513.5" />
+        <NodeLayout
+          Size="168.8,41.6"
+          Id="Package\Import Fresh Data\Convert Data"
+          TopLeft="38.3,107.96666666064" />
+        <NodeLayout
+          Size="234.4,41.6"
+          Id="Package\Import Fresh Data\Convert SoldAsVacant to boolean"
+          TopLeft="6.33333328780208,412.76666666064" />
+        <NodeLayout
+          Size="167.2,41.6"
+          Id="Package\Import Fresh Data\SplitOwnerAddress"
+          TopLeft="39.1000000000001,310.3" />
+        <NodeLayout
+          Size="176,41.6"
+          Id="Package\Import Fresh Data\SplitPropertyAddress"
+          TopLeft="34.7,208.7" />
+        <NodeLayout
+          Size="140,41.6"
+          Id="Package\Import Fresh Data\Excel Source"
+          TopLeft="52.7,5.49999999999995" />
         <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Derived Column Output]"
-          TopLeft="123.866666302416,370.93333104319">
+          Id="Package\Import Fresh Data.Paths[Output 01]"
+          TopLeft="123.116666643901,351.9">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-43.4333346537417,53.7333326703973"
+              EndConnector="0,60.86666666064"
               Start="0,0"
-              End="-43.4333346537417,46.2333326703973">
+              End="0,53.36666666064">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,22.8666663351986" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,22.8666663351986"
-                    Point2="0,26.8666663351986"
-                    Point3="-4,26.8666663351986" />
-                  <mssgle:LineSegment
-                    End="-39.4333346537417,26.8666663351986" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-39.4333346537417,26.8666663351986"
-                    Point2="-43.4333346537417,26.8666663351986"
-                    Point3="-43.4333346537417,30.8666663351986" />
-                  <mssgle:LineSegment
-                    End="-43.4333346537417,46.2333326703973" />
+                    End="0,53.36666666064" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="-27.78849609375,21.07639973657,55.5769921875,11.2138671875"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Import Fresh Data.Paths[Output 0]"
+          TopLeft="122.7,250.3">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,59.9999999999999"
+              Start="0,0"
+              End="0,52.4999999999999">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.4999999999999" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-27.78849609375,20.64306640625,55.5769921875,11.2138671875"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Import Fresh Data.Paths[Excel Source Output]"
+          TopLeft="122.7,47.1">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60.8666666606399"
+              Start="0,0"
+              End="0,53.3666666606399">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,53.3666666606399" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-27.78849609375,21.0763997365699,55.5769921875,11.2138671875"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Import Fresh Data.Paths[Derived Column Output]"
+          TopLeft="123.116666643901,454.36666666064">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,59.1333333393602"
+              Start="0,0"
+              End="0,51.6333333393602">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,51.6333333393602" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-27.78849609375,20.2097330759301,55.5769921875,11.2138671875"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Import Fresh Data.Paths[Data Conversion Output]"
+          TopLeft="122.7,149.56666666064">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,59.1333333393599"
+              Start="0,0"
+              End="0,51.6333333393599">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,51.6333333393599" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-27.78849609375,20.20973307593,55.5769921875,11.2138671875"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\Excel Source">
+    design-time-name="Package\Import Fresh Data\SQL_NashvilleHousingData">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -3493,7 +3672,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=]]></arrayElement>
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\SQL_NashvilleHousingData">
+    design-time-name="Package\Import Fresh Data\Excel Source">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
